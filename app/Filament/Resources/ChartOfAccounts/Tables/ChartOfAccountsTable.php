@@ -20,8 +20,6 @@ class ChartOfAccountsTable
                 TextColumn::make('accountType.name')->label('Account Type')->searchable()->sortable(),
                 TextColumn::make('account_code')->label('Account Code')->searchable()->sortable(),
                 TextColumn::make('description')->label('Description')->limit(50)->wrap(),
-                TextColumn::make('created_at')->label('Created At')->dateTime()->sortable(),
-                TextColumn::make('updated_at')->label('Updated At')->dateTime()->sortable(),
             ])
             ->filters([
                 //

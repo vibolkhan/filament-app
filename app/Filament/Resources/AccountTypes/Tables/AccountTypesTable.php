@@ -23,8 +23,6 @@ class AccountTypesTable
                 IconColumn::make('is_active')
                     ->boolean(),
                 TextColumn::make('description')->label('Description')->limit(50)->wrap(),
-                TextColumn::make('created_at')->label('Created At')->dateTime()->sortable(),
-                TextColumn::make('updated_at')->label('Updated At')->dateTime()->sortable(),
             ])
             ->filters([
                 //
