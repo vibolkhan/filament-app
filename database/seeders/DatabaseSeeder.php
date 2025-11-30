@@ -7,10 +7,16 @@ use App\Models\Currency;
 use App\Models\Account;
 use App\Models\AccountType;
 use App\Models\ChartOfAccount;
-use App\Models\Journal;
 use App\Models\Journals;
+use App\Models\Position;
+use App\Models\Employee;
+use App\Models\Education;
+use App\Models\History;
+use App\Models\EmployeeEducationHistories;
+
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,18 +27,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // ─────────────────────────────────────────────
-        // USERS
-        // ─────────────────────────────────────────────
         User::factory()->create([
             'name'  => 'Test User',
             'email' => 'test@example.com',
         ]);
-
-        // ─────────────────────────────────────────────
-        // CURRENCIES
-        // ─────────────────────────────────────────────
-        Currency::query()->delete();
+        User::create([
+            'name'     => 'Admin',
+            'email'    => 'admin@example.com',
+            'password' => Hash::make('123'),
+        ]);
 
         $usd = Currency::create([
             'code'         => 'USD',
@@ -49,15 +52,6 @@ class DatabaseSeeder extends Seeder
             'rate_to_base' => 4100.000000,
             'is_default'   => false,
         ]);
-
-        // ─────────────────────────────────────────────
-        // ACCOUNTS & ACCOUNT TYPES
-        // ─────────────────────────────────────────────
-
-        Journals::query()->delete();
-        Account::query()->delete();
-        ChartOfAccount::query()->delete();
-        AccountType::query()->delete();
 
         $assetType = AccountType::create([
             'name'           => 'Assets',
@@ -305,6 +299,108 @@ class DatabaseSeeder extends Seeder
             'credit_account_id' => null,
             'currency_id'       => $usd->id,
             'is_active'         => true,
+        ]);
+
+        $positionDev = Position::create([
+            'name'        => 'Junior Developer',
+            'description' => 'Entry level software developer.',
+            'department'  => 'IT',
+        ]);
+
+        $positionSeniorDev = Position::create([
+            'name'        => 'Senior Developer',
+            'description' => 'Leads development tasks and mentors juniors.',
+            'department'  => 'IT',
+        ]);
+
+        $positionHrOfficer = Position::create([
+            'name'        => 'HR Officer',
+            'description' => 'Handles HR operations and recruitment.',
+            'department'  => 'HR',
+        ]);
+
+        $employee1 = Employee::create([
+            'first_name'         => 'Alice',
+            'last_name'          => 'Chan',
+            'email'              => 'alice@example.com',
+            'phone'              => '012345678',
+            'address'            => 'Phnom Penh',
+            'current_position_id' => $positionSeniorDev->id,
+        ]);
+
+        $employee2 = Employee::create([
+            'first_name'         => 'Bora',
+            'last_name'          => 'Sok',
+            'email'              => 'bora@example.com',
+            'phone'              => '098765432',
+            'address'            => 'Kampong Cham',
+            'current_position_id' => $positionHrOfficer->id,
+        ]);
+
+        History::create([
+            'employee_id' => $employee1->id,
+            'position_id' => $positionDev->id,
+            'start_date'  => now()->subYears(2)->startOfYear(),
+            'end_date'    => now()->subYear(),
+            'note'        => 'Joined as Junior Developer.',
+        ]);
+
+        History::create([
+            'employee_id' => $employee1->id,
+            'position_id' => $positionSeniorDev->id,
+            'start_date'  => now()->subYear(),
+            'end_date'    => null,
+            'note'        => 'Promoted to Senior Developer.',
+        ]);
+
+        History::create([
+            'employee_id' => $employee2->id,
+            'position_id' => $positionHrOfficer->id,
+            'start_date'  => now()->subYears(1),
+            'end_date'    => null,
+            'note'        => 'Hired as HR Officer.',
+        ]);
+
+        $eduItBachelor = Education::create([
+            'school_name' => 'Royal University of Phnom Penh',
+            'major'       => 'Computer Science',
+            'degree'      => 'Bachelor',
+        ]);
+
+        $eduBusinessBachelor = Education::create([
+            'school_name' => 'National University of Management',
+            'major'       => 'Business Administration',
+            'degree'      => 'Bachelor',
+        ]);
+
+        $eduHrDiploma = Education::create([
+            'school_name' => 'Institute of HR Management',
+            'major'       => 'Human Resources',
+            'degree'      => 'Diploma',
+        ]);
+
+        EmployeeEducationHistories::create([
+            'employee_id' => $employee1->id,
+            'education_id' => $eduItBachelor->id,
+            'start_year'  => 2016,
+            'end_year'    => 2020,
+            'note'        => 'Graduated with honors.',
+        ]);
+
+        EmployeeEducationHistories::create([
+            'employee_id' => $employee2->id,
+            'education_id' => $eduBusinessBachelor->id,
+            'start_year'  => 2015,
+            'end_year'    => 2019,
+            'note'        => null,
+        ]);
+
+        EmployeeEducationHistories::create([
+            'employee_id' => $employee2->id,
+            'education_id' => $eduHrDiploma->id,
+            'start_year'  => 2020,
+            'end_year'    => 2021,
+            'note'        => 'Specialized in HR operations.',
         ]);
     }
 }
